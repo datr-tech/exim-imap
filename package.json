@@ -1,0 +1,69 @@
+{
+  "name": "@datr.tech/exim-imap",
+  "description": "datr.tech exim imap",
+  "version": "0.3.0",
+  "private": false,
+  "homepage": "https://github.com/datr.tech/exim-imap",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datr.tech/exim-imap.git"
+  },
+  "keywords": [
+    "@app-exim-imap",
+    "@datr.tech",
+    "bash",
+    "email",
+    "exim",
+		"imap"
+  ],
+  "license": "MIT",
+  "author": "admin <admin@datr.tech>",
+  "engines": {
+    "node": ">=20.0.9",
+    "npm": ">=10.1.0"
+  },
+  "scripts": {
+    "changelog": "npx auto-changelog",
+    "changelog:add": "git add ./CHANGELOG.md",
+    "changelog:commit": "git commit -m 'ci: update changelog' --no-verify",
+    "commit-msg": "npx commitlint --edit",
+    "docker:up": "docker compose up",
+    "docker:down": "docker compose down",
+    "docker:rmi": "docker rmi $(docker image ls -a -q)",
+    "format": "npm run format:check",
+    "format:check": "npm-run-all format:config:check format:scripts:check format:test:check",
+    "format:write": "npm-run-all format:config:write format:scripts:write format:test:write",
+    "format:config:check": "npx prettier --check ./.env ./compose.yaml ./*.{json,mjs,txt}",
+    "format:config:write": "npx prettier --write ./.env ./compose.yaml ./*.{json,mjs,txt}",
+    "format:scripts:check": "npx prettier --check ./scripts/*.sh",
+    "format:scripts:write": "npx prettier --write ./scripts/*.sh",
+    "format:test:check": "npx prettier --check  ./test/*.sh",
+    "format:test:write": "npx prettier --write ./test/*.sh",
+    "lint": "npm-run-all lint:scripts",
+    "lint:base": "npx shellcheck ${npm_config_path}",
+    "lint:docker": "docker build --check --build-arg 'BUILDKIT_DOCKERFILE_CHECK=error=true' .",
+    "lint:scripts": "npm run lint:base --path='./scripts/*.sh'",
+    "lint:test": "npm run lint:base --path='./test/*.sh'",
+    "postinstall": "./scripts/postinstall.sh",
+    "precommit": "npm-run-all format lint spell",
+    "prepare": "husky",
+    "prepush": "npm run lint",
+    "preversion": "npm-run-all format lint spell",
+    "spell": "npx cspell .",
+    "start": "npm run docker:up",
+    "stop": "npm-run-all docker-down docker:rmi",
+    "test": "/lib/bashunit ./test/*.test.sh",
+    "version": "npm-run-all changelog"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "auto-changelog": "^2.5.0",
+    "husky": "^9.1.7",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.5.3",
+    "prettier-plugin-sh": "^0.17.4",
+    "prettier-plugin-sort-json": "^4.1.1",
+    "shellcheck": "^3.1.0"
+  }
+}
