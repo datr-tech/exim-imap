@@ -48,10 +48,11 @@
     "postinstall": "./scripts/postinstall.sh",
     "precommit": "npm-run-all format lint spell",
     "postinstall": "npm-run-all husky:init template:env",
+    "prestart": "sh -c 'cd ../exim-db && npm run sql:generate'",
     "preversion": "npm-run-all format lint spell",
     "spell": "npx cspell .",
     "start": "npm run docker:up",
-    "stop": "npm-run-all docker-down docker:rmi",
+    "stop": "npm-run-all docker:down docker:rmi",
     "template:env": "scripts/generate_conf_template.sh .env",
     "template:env:cp": "sh -c 'cp ./.env.TEMPLATE ./.env'",
     "version": "npm-run-all changelog"
