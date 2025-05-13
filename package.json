@@ -47,6 +47,7 @@
     "lint:scripts": "npx shellcheck ./scripts/*.sh",
     "postinstall": "./scripts/postinstall.sh",
     "precommit": "npm-run-all format lint spell",
+    "prepush": "npm run lint",
     "postinstall": "npm-run-all husky:init template:env",
     "prestart": "sh -c 'cd ../exim-db && npm run sql:generate'",
     "preversion": "npm-run-all format lint spell",
