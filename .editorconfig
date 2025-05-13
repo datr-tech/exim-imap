@@ -22,13 +22,6 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 #
-# .exp* overrides
-#
-[.exp*]
-indent_size = tab
-indent_style = tab
-
-#
 # .git* overrides
 #
 [.git*]
