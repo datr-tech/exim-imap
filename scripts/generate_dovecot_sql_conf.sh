@@ -5,55 +5,39 @@ IFS=$'\n\t'
 
 #####################################################################
 #                                                                   #
+# Script:  generate_dovecot_sql_conf.sh                             #
 #                                                                   #
-# Script:  generate_conf_template.sh                                #
+# Purpose: Generate 'dovecot-sql.conf' from from the associated     #
+#          template file, dovecot-sql.conf.TEMPLATE.with env var    #
+#          values.                                                  #
 #                                                                   #
-#                                                                   #
-# Purpose: Generate a clean .TEMPLATE file from the                 #
-#          received config file path.                               #
-#                                                                   #
-#                                                                   #
-# Date:    12th May 2025                                            #
+# Date:    13th May 2025                                            #
 # Author:  datr.tech admin <admin@datr.tech>                        #
-#                                                                   #
 #                                                                   #
 #####################################################################
 
 #####################################################################
 #                                                                   #
+# MAIN SECTIONS (within the code below)                             #
+# =====================================                             #
 #                                                                   #
-# SECTIONS (within the code below)                                  #
-# ================================                                  #
+# 1.  DEFINITIONS                                                   #
+# 2.  CHECK DEPENDENCIES                                            #
+# 3.  DIR AND FILE PATHS                                            #
+# 4.  LOAD AND CHECK ENV VARS                                       #
+# 5.  CREATE OUT_FILE                                               #
+# 6.  MODIFY OUT_FILE                                               #
+#                                                                   #
+#####################################################################
+
+#####################################################################
+#####################################################################
 #                                                                   #
 #                                                                   #
 # 1. DEFINITIONS                                                    #
-# --------------                                                    #
-#                                                                   #
-# 1.1   Primary file names                                          #
-# 1.2   Secondary file and dir names                                #
-# 1.3   Required dependencies (for the current file)                #
 #                                                                   #
 #                                                                   #
-# 2. CHECK DEPENDENCIES                                             #
-# ---------------------                                             #
-#                                                                   #
-# 2.1   Check required dependencies (for the current file)          #
-#                                                                   #
-#                                                                   #
-# 3. DIR AND FILE PATHS                                             #
-# ---------------------                                             #
-#                                                                   #
-# 3.1   Dir paths                                                   #
-# 3.2   File paths                                                  #
-# 3.3   Check IN_FILE_PATH                                          #
-#                                                                   #
-#                                                                   #
-# 4. GENERATE OUT_FILE (.env.TEMPLATE)                              #
-# ------------------------------------                              #
-#                                                                   #
-# 4.1  Back up OUT_FILE (if it exists)                              #
-# 4.2  Generate OUT_FILE from IN_FILE                               #
-#                                                                   #
+#####################################################################
 #####################################################################
 
 #####################################################################
@@ -62,8 +46,8 @@ IFS=$'\n\t'
 #                                                                   #
 #####################################################################
 
-declare -r IN_FILE_NAME=${1}
-declare -r OUT_FILE_NAME="${IN_FILE_NAME}.TEMPLATE"
+declare -r IN_FILE_NAME="dovecot-sql.conf.TEMPLATE"
+declare -r OUT_FILE_NAME="dovecot-sql.conf"
 
 #####################################################################
 #                                                                   #
@@ -71,18 +55,30 @@ declare -r OUT_FILE_NAME="${IN_FILE_NAME}.TEMPLATE"
 #                                                                   #
 #####################################################################
 
+declare -r ENV_FILE_NAME=".env"
+declare -r CONF_DIR_NAME="conf"
 declare -r SCRIPTS_DIR_NAME="scripts"
 
 #####################################################################
 #                                                                   #
-# 1.3  Required dependencies (for the current file)                 #
+# 1.3  Required env vars                                            #
 #                                                                   #
 #####################################################################
 
-declare -a -r REQUIRED_DEPENDENCIES=(
-  "dirname"
-  "sed"
+declare -a -r REQUIRED_ENV_VARS=(
+  "EXIM_IMAP__DATABASE__NAME"
+  "EXIM_IMAP__DATABASE__USER_NAME"
+  "EXIM_IMAP__DATABASE__USER_PASS"
+  "EXIM_IMAP__TEMPLATE_FILE__VARIABLE_PREFIX_TAG"
 )
+
+#####################################################################
+#                                                                   #
+# 1.4  Required dependencies (for the current file)                 #
+#                                                                   #
+#####################################################################
+
+declare -a -r REQUIRED_DEPENDENCIES=("sed")
 
 #####################################################################
 #####################################################################
@@ -131,25 +127,43 @@ readonly SCRIPTS_DIR_PATH
 ROOT_DIR_PATH="${SCRIPTS_DIR_PATH/\/${SCRIPTS_DIR_NAME}/}"
 readonly ROOT_DIR_PATH
 
+CONF_DIR_PATH="${ROOT_DIR_PATH}/${CONF_DIR_NAME}"
+readonly CONF_DIR_PATH
+
 #####################################################################
 #                                                                   #
 # 3.2  File paths                                                   #
 #                                                                   #
 #####################################################################
 
-IN_FILE_PATH="${ROOT_DIR_PATH}/${IN_FILE_NAME}"
+ENV_FILE_PATH="${ROOT_DIR_PATH}/${ENV_FILE_NAME}"
+readonly ENV_FILE_PATH
+
+IN_FILE_PATH="${CONF_DIR_PATH}/${IN_FILE_NAME}"
 readonly IN_FILE_PATH
 
-OUT_FILE_PATH="${ROOT_DIR_PATH}/${OUT_FILE_NAME}"
+OUT_FILE_PATH="${CONF_DIR_PATH}/${OUT_FILE_NAME}"
 readonly OUT_FILE_PATH
 
 #####################################################################
 #                                                                   #
-# 3.3  Check IN_FILE_PATH                                           #
+# 3.3  Check ENV_FILE_PATH                                          #
 #                                                                   #
 #####################################################################
 
-#shellcheck source=.env
+#shellcheck source=/.env
+if [ ! -s "${ENV_FILE_PATH}" ]; then
+  echo "ENV_FILE_PATH: invalid"
+  exit 1
+fi
+
+#####################################################################
+#                                                                   #
+# 3.4  Check IN_FILE_PATH                                           #
+#                                                                   #
+#####################################################################
+
+#shellcheck source=/sql/exim_db.sql.b64
 if [ ! -s "${IN_FILE_PATH}" ]; then
   echo "IN_FILE_PATH: invalid"
   exit 1
@@ -159,7 +173,7 @@ fi
 #####################################################################
 #                                                                   #
 #                                                                   #
-# 4. GENERATE OUT_FILE (.env.TEMPLATE)                              #
+# 4. LOAD AND CHECK ENV VARS                                        #
 #                                                                   #
 #                                                                   #
 #####################################################################
@@ -167,7 +181,43 @@ fi
 
 #####################################################################
 #                                                                   #
-# 4.1  Back up OUT_FILE (if it exists)                              #
+# 4.1  Load env vars                                                #
+#                                                                   #
+#####################################################################
+
+set -a
+# shellcheck source=/.env
+source "${ENV_FILE_PATH}"
+set +a
+
+#####################################################################
+#                                                                   #
+# 4.2  Check the required env vars                                  #
+#                                                                   #
+#####################################################################
+
+declare required_env_var
+
+for required_env_var in "${REQUIRED_ENV_VARS[@]}"; do
+  if [ -z "${!required_env_var}" ]; then
+    echo "${required_env_var}: not found" >&2
+    exit 1
+  fi
+done
+
+#####################################################################
+#####################################################################
+#                                                                   #
+#                                                                   #
+# 5.  CREATE OUT_FILE                                               #
+#                                                                   #
+#                                                                   #
+#####################################################################
+#####################################################################
+
+#####################################################################
+#                                                                   #
+# 5.1  Back up OUT_FILE (if it exists)                              #
 #                                                                   #
 #####################################################################
 
@@ -180,21 +230,31 @@ fi
 
 #####################################################################
 #                                                                   #
-# 4.2  Generate OUT_FILE from IN_FILE                               #
+# 5.2  Copy IN_FILE to OUT_FILE                                     #
 #                                                                   #
 #####################################################################
 
-#
-# Convert IN_FILE env vars string values to "" (within the OUT_FILE)
-#
-sed -E 's/\".+\"/\"\"/g' "${IN_FILE_PATH}" > "${OUT_FILE_PATH}"
+cp "${IN_FILE_PATH}" "${OUT_FILE_PATH}"
 
-#
-# Convert (in place) env vars numeric values to 0
-#
-sed -E -i 's/=[0-9]+/=0/g' "${OUT_FILE_PATH}"
+#####################################################################
+#####################################################################
+#                                                                   #
+#                                                                   #
+# 6.  MODIFY OUT_FILE                                               #
+#                                                                   #
+#                                                                   #
+#####################################################################
+#####################################################################
 
-#
-# Convert (in place) env vars bool values to the key phrase '<BOOL_VALUE>'
-#
-sed -E -i "s/=(true|false)/='<BOOL_VALUE>'/g" "${OUT_FILE_PATH}"
+declare required_var
+declare sed_body
+declare template_var
+declare template_value
+
+for required_var in "${REQUIRED_ENV_VARS[@]}"; do
+  template_var="${EXIM_IMAP__TEMPLATE_FILE__VARIABLE_PREFIX_TAG}${required_var}"
+  template_value="${!required_var}"
+
+  sed_body="s/${template_var}/${template_value}/g"
+  sed -i "${sed_body}" "${OUT_FILE_PATH}"
+done

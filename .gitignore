@@ -43,5 +43,5 @@ node_modules/
 #
 # Standard files to be ignored
 #
-conf/exim.crt
-conf/exim.key
+conf/dovecot-sql.conf
+conf/conf.d/10-master.conf

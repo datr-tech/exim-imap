@@ -53,8 +53,8 @@ service auth {
   }
   unix_listener auth-client {
     mode = 0777
-    user = "$EXIM_IMAP__USER__SYS_NAME"
-    group = "$EXIM_IMAP__USER__SYS_GRP"
+    user = "${EXIM_IMAP__USER__SYS_NAME}"
+    group = "${EXIM_IMAP__USER__SYS_GRP}"
   }
 }
 
