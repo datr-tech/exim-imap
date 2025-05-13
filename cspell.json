@@ -1,0 +1,29 @@
+{
+  "ignorePaths": [".git", "conf", "coverage", "lib", "node_modules"],
+  "language": "en-gb",
+  "languageSettings": [
+    {
+      "languageId": "bash, javascript, typescript"
+    }
+  ],
+  "version": "0.2",
+  "words": [
+    "BUILDKIT",
+    "datr",
+    "EXIM",
+    "healthcheck",
+    "imapd",
+    "libsasl",
+    "lindex",
+    "maildir",
+    "noninteractive",
+    "nslookup",
+    "sasl",
+    "shellcheck",
+    "TEARDOWN",
+    "TLSC",
+    "tuplen",
+    "VARS",
+    "vars"
+  ]
+}

@@ -1,0 +1,19 @@
+name: pull-request-develop-branch CI
+on:
+  pull_request:
+    branches:
+    - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+      if: github.event.review.state == 'approved'
+    - run: npm run format
+    - run: npm run lint
+    - run: npm run cspell
+      #    - run: npm run build

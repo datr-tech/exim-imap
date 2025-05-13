@@ -1,46 +1,36 @@
 #####################################################################
 #                                                                   #
-# Script:  .gitignore                                               #
+# Script:  .editorconfig                                            #
 #                                                                   #
-# Purpose: A list of files and dirs to be ignored by git.           #
+# Purpose: Consistent coding style across editors and IDEs          #
 #                                                                   #
-# Date:    11th May 2025                                            #
+# Date:    12th May 2025                                            #
 #                                                                   #
 # Author:  datr.tech admin <admin@datr.tech>                        #
 #                                                                   #
 #####################################################################
 
 #
-# Common file extensions to be ignored
+# All files
 #
-.DS_Store
-.err
-.gz
-.log
-.pid
-.out
-.rds
-.swp
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
 
 #
-# Hidden dirs to be ignored
+# .exp* overrides
 #
-.idea/
+[.exp*]
+indent_size = tab
+indent_style = tab
 
 #
-# Hidden files to be ignored
+# .git* overrides
 #
-.bashunit.conf
-.env
-
-#
-# Standard dirs to be ignored
-#
-lib/
-node_modules/
-
-#
-# Standard files to be ignored
-#
-conf/exim.crt
-conf/exim.key
+[.git*]
+indent_size = tab
+indent_style = tab

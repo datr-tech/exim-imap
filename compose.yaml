@@ -1,0 +1,58 @@
+#####################################################################
+#                                                                   #
+# Script:  compose.yaml                                             #
+#                                                                   #
+# Purpose: Docker compose definition for exim-imap                  #
+#                                                                   #
+# Date:    11th May 2025                                            #
+#                                                                   #
+# Author:  datr.tech admin <admin@datr.tech>                        #
+#                                                                   #
+#####################################################################
+
+include:
+  - path: '../exim-db/compose.yaml'
+services:
+  exim-imap:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        EXIM_IMAP_ADMIN: ${EXIM_IMAP_ADMIN}
+        EXIM_IMAP_ADMIN_DIR: ${EXIM_IMAP_ADMIN_DIR}
+        EXIM_IMAP_ADMIN_GRP: ${EXIM_IMAP_ADMIN_GRP}
+        EXIM_IMAP_ADMIN_SHELL: ${EXIM_IMAP_ADMIN_SHELL}
+        EXIM_IMAP_AUTHOR: ${EXIM_IMAP_AUTHOR}
+        EXIM_IMAP_CONF: ${EXIM_IMAP_CONF}
+        EXIM_IMAP_GRP: ${EXIM_IMAP_GRP}
+        EXIM_IMAP_USER: ${EXIM_IMAP_USER}
+        EXIM_IMAP_USER_DIR: ${EXIM_IMAP_USER_DIR}
+        EXIM_IMAP_USER_GRP: ${EXIM_IMAP_USER_GRP}
+        EXIM_IMAP_USER_PASS: ${EXIM_IMAP_USER_PASS}
+        EXIM_IMAP_USER_SHELL: ${EXIM_IMAP_USER_SHELL}
+        EXIM_IMAP_USER_SYS: ${EXIM_IMAP_USER_SYS}
+    container_name: ${EXIM_IMAP_CONTAINER}
+    depends_on:
+      - ${EXIM_IMAP_CHILD_DB}
+    healthcheck:
+      interval: 10s
+      start_period: 30s
+      test: ['CMD', 'netstat -ltn | grep -c ${EXIM_IMAP_PORT_UNSECURE}']
+      timeout: 5s
+    networks:
+      - ${EXIM_NETWORK}
+    ports:
+      - ${EXIM_IMAP_PORT_SECURE}:${EXIM_IMAP_PORT_SECURE}
+      - ${EXIM_IMAP_PORT_UNSECURE}:${EXIM_IMAP_PORT_UNSECURE}
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: ${EXIM_DB_SOCKET_VOLUME}
+        target: ${EXIM_DB_SOCKET_VOLUME_TARGET}
+      - type: volume
+        source: ${EXIM_IMAP_SOCKET_VOLUME}
+        target: ${EXIM_IMAP_SOCKET_VOLUME_TARGET}
+volumes:
+  exim-imap-socket-volume:
+    driver: local
+    name: ${EXIM_IMAP_SOCKET_VOLUME}

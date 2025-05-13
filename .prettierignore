@@ -1,8 +1,8 @@
 #####################################################################
 #                                                                   #
-# Script:  .gitignore                                               #
+# Script:  .prettierignore                                          #
 #                                                                   #
-# Purpose: A list of files and dirs to be ignored by git.           #
+# Purpose: A list of files and dirs to be ignored by prettier.      #
 #                                                                   #
 # Date:    11th May 2025                                            #
 #                                                                   #
@@ -11,27 +11,15 @@
 #####################################################################
 
 #
-# Common file extensions to be ignored
-#
-.DS_Store
-.err
-.gz
-.log
-.pid
-.out
-.rds
-.swp
-
-#
 # Hidden dirs to be ignored
 #
-.idea/
+.git/
+.husky/
 
 #
 # Hidden files to be ignored
 #
-.bashunit.conf
-.env
+.mailmap
 
 #
 # Standard dirs to be ignored
@@ -42,5 +30,6 @@ node_modules/
 #
 # Standard files to be ignored
 #
-conf/exim.crt
-conf/exim.key
+CHANGELOG.md
+LICENSE.txt
+package-lock.json
