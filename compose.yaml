@@ -18,41 +18,44 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        EXIM_IMAP_ADMIN: ${EXIM_IMAP_ADMIN}
-        EXIM_IMAP_ADMIN_DIR: ${EXIM_IMAP_ADMIN_DIR}
-        EXIM_IMAP_ADMIN_GRP: ${EXIM_IMAP_ADMIN_GRP}
-        EXIM_IMAP_ADMIN_SHELL: ${EXIM_IMAP_ADMIN_SHELL}
-        EXIM_IMAP_AUTHOR: ${EXIM_IMAP_AUTHOR}
-        EXIM_IMAP_CONF: ${EXIM_IMAP_CONF}
-        EXIM_IMAP_GRP: ${EXIM_IMAP_GRP}
-        EXIM_IMAP_USER: ${EXIM_IMAP_USER}
-        EXIM_IMAP_USER_DIR: ${EXIM_IMAP_USER_DIR}
-        EXIM_IMAP_USER_GRP: ${EXIM_IMAP_USER_GRP}
-        EXIM_IMAP_USER_PASS: ${EXIM_IMAP_USER_PASS}
-        EXIM_IMAP_USER_SHELL: ${EXIM_IMAP_USER_SHELL}
-        EXIM_IMAP_USER_SYS: ${EXIM_IMAP_USER_SYS}
-    container_name: ${EXIM_IMAP_CONTAINER}
+        EXIM_IMAP__CONF___CORE_DEST: ${EXIM_IMAP__CONF__CORE_DEST}
+        EXIM_IMAP__CONF___CORE_SOURCE: ${EXIM_IMAP__CONF__CORE_SOURCE}
+        EXIM_IMAP__CONF___OVERRIDES_DEST: ${EXIM_IMAP__CONF__OVERRIDES_DEST}
+        EXIM_IMAP__CONF___OVERRIDES_SOURCE: ${EXIM_IMAP__CONF__OVERRIDES_SOURCE}
+        EXIM_IMAP__DOCKERFILE__AUTHOR: ${EXIM_IMAP__DOCKERFILE__AUTHOR}
+        EXIM_IMAP__USER__ADMIN_DIR: ${EXIM_IMAP__USER__ADMIN_DIR}
+        EXIM_IMAP__USER__ADMIN_GRP: ${EXIM_IMAP__USER__ADMIN_GRP}
+        EXIM_IMAP__USER__ADMIN_NAME: ${EXIM_IMAP__USER__ADMIN_NAME}
+        EXIM_IMAP__USER__ADMIN_SHELL: ${EXIM_IMAP__USER__ADMIN_SHELL}
+        EXIM_IMAP__USER__GRP: ${EXIM_IMAP__USER__GRP}
+        EXIM_IMAP__USER__STD_DIR: ${EXIM_IMAP__USER__STD_DIR}
+        EXIM_IMAP__USER__STD_GRP: ${EXIM_IMAP__USER__STD_GRP}
+        EXIM_IMAP__USER__STD_NAME: ${EXIM_IMAP__USER__STD_NAME}
+        EXIM_IMAP__USER__STD_PASS: ${EXIM_IMAP__USER__STD_PASS}
+        EXIM_IMAP__USER__STD_SHELL: ${EXIM_IMAP__USER__STD_SHELL}
+        EXIM_IMAP__USER__SYS: ${EXIM_IMAP__USER__SYS}
+    container_name: ${EXIM_IMAP__CONTAINER_NAME__IMAP}
     depends_on:
-      - ${EXIM_IMAP_CHILD_DB}
+      - ${EXIM_IMAP__CONTAINER_NAME__DB}
     healthcheck:
       interval: 10s
       start_period: 30s
-      test: ['CMD', 'netstat -ltn | grep -c ${EXIM_IMAP_PORT_UNSECURE}']
+      test: ['CMD', 'netstat -ltn | grep -c ${EXIM_IMAP__PORT__INSECURE}']
       timeout: 5s
     networks:
-      - ${EXIM_NETWORK}
+      - ${EXIM_IMAP__NETWORK__EXIM}
     ports:
-      - ${EXIM_IMAP_PORT_SECURE}:${EXIM_IMAP_PORT_SECURE}
-      - ${EXIM_IMAP_PORT_UNSECURE}:${EXIM_IMAP_PORT_UNSECURE}
+      - ${EXIM_IMAP__PORT__INSECURE}:${EXIM_IMAP__PORT__INSECURE}
+      - ${EXIM_IMAP__PORT__SECURE}:${EXIM_IMAP__PORT__SECURE}
     restart: unless-stopped
     volumes:
       - type: volume
-        source: ${EXIM_DB_SOCKET_VOLUME}
-        target: ${EXIM_DB_SOCKET_VOLUME_TARGET}
+        source: ${EXIM_IMAP__SOCKET__DB_VOLUME_NAME}
+        target: ${EXIM_IMAP__SOCKET__DB_VOLUME_DIR}
       - type: volume
-        source: ${EXIM_IMAP_SOCKET_VOLUME}
-        target: ${EXIM_IMAP_SOCKET_VOLUME_TARGET}
+        source: ${EXIM_IMAP__SOCKET__IMAP_VOLUME_NAME}
+        target: ${EXIM_IMAP__SOCKET__IMAP_VOLUME_DIR}
 volumes:
   exim-imap-socket-volume:
     driver: local
-    name: ${EXIM_IMAP_SOCKET_VOLUME}
+    name: ${EXIM_IMAP__SOCKET__IMAP_VOLUME_NAME}
