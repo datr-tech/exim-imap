@@ -9,7 +9,7 @@
 #          Use 'npm run conf:update' to copy this template          # 
 #          file to 'dovecot-sql.conf' and populate the              #
 #          '$EXIM_IMAP__*' variables below with the associated      #
-#          env var value.                                           #
+#          env var values.                                          #
 #                                                                   #
 #          ---------------------------------------------------      #
 #                                                                   #
